@@ -3,99 +3,91 @@
 #include <math.h>
 #include <memory.h>
 
-int l, n, mode;
-char *binaryIn;
-
-int useArgs( int argc, char *argv[] );
-void decimalToBinary(int decimal, int firstBit, int bits, char binary[bits]);
-int binaryToDecimal(int firstBit, int bits, char binary[bits]);
+int useArgs( int argc, char *argv[], int *l, long *n, int *mode, char **binaryIn);
+void decimalToBinary(long decimal, int firstBit, int bits, char binary[bits]);
+long binaryToDecimal(int firstBit, int bits, char binary[bits]);
 void invert(int firstBit, int bits, char binary[bits]);
-void signedMagnitude(int size, char result[size+1]);
-int reverseSignedMagnitude();
-void onesComplement(int size, char result[size+1]);
-int reverseOnesComplement();
-void twosComplement(int size, char result[size+1]);
-int reverseTwosComplement();
-void excess(int size, char result[size+1]);
-int reverseExcess();
+void signedMagnitude(long n, int size, char result[size+1]);
+long reverseSignedMagnitude(int size, char binaryIn[size]);
+void onesComplement(long n, int size, char result[size+1]);
+long reverseOnesComplement(int size, char binaryIn[size]);
+void twosComplement(long n, int size, char result[size+1]);
+long reverseTwosComplement(int size, char binaryIn[size]);
+void excess(long n, int size, char result[size+1]);
+long reverseExcess(int size, char binaryIn[size]);
 
 int main( int argc, char *argv[] ) {
-    if (!useArgs( argc, argv ))
+    int l, mode;
+    long n;
+    char *binaryIn;
+    if (!useArgs( argc, argv, &l, &n, &mode, &binaryIn ))
         return EXIT_FAILURE;
     if (mode) {
         char result[l + 1];
-        signedMagnitude(l, result);
+        signedMagnitude(n, l, result);
         printf("Signed Magnitude: %s\n", result);
-        onesComplement(l, result);
+        onesComplement(n, l, result);
         printf("One's Complement: %s\n", result);
-        twosComplement(l, result);
+        twosComplement(n, l, result);
         printf("Two's Complement: %s\n", result);
-        excess(l, result);
+        excess(n, l, result);
         printf("Excess Representation: %s\n", result);
         return EXIT_SUCCESS;
     }
-    printf("Signed Magnitude: %d\n",reverseSignedMagnitude());
-    printf("One's Complement: %d\n",reverseOnesComplement());
-    printf("Two's Complement: %d\n",reverseTwosComplement());
-    printf("Excess Representation: %d\n",reverseExcess());
+    printf("Signed Magnitude: %li\n",reverseSignedMagnitude(l, binaryIn));
+    printf("One's Complement: %li\n",reverseOnesComplement(l, binaryIn));
+    printf("Two's Complement: %li\n",reverseTwosComplement(l, binaryIn));
+    printf("Excess Representation: %li\n",reverseExcess(l, binaryIn));
     return EXIT_SUCCESS;
 }
 
-void signedMagnitude(int size, char result[size+1]){
+void signedMagnitude(long n, int size, char result[size+1]){
     result[size]='\0';
-    int num;
     if (n<0){
-        num = n * -1;
+        n *= -1;
         result[0] = '1';
     } else {
-        num = n;
         result[0] = '0';
     }
-    decimalToBinary(num, 1, size, result);
+    decimalToBinary(n, 1, size, result);
 }
 
-int reverseSignedMagnitude(){
-    int result = binaryToDecimal(1,l,binaryIn);
+long reverseSignedMagnitude(int size, char binaryIn[size]){
+    long result = binaryToDecimal(1,size,binaryIn);
     if (binaryIn[0] == '1')
         result *= -1;
     return result;
 }
 
-void onesComplement(int size, char result[size+1]){
+void onesComplement(long n, int size, char result[size+1]){
     result[size]='\0';
-    int num;
     if (n<0)
-        num = n * -1;
-    else
-        num = n;
+        n *= -1;
     result[0] = '0';
-    decimalToBinary(num, 1, size, result);
+    decimalToBinary(n, 1, size, result);
     if (n < 0){
         invert(0,size,result);
     }
 }
 
-int reverseOnesComplement(){
+long reverseOnesComplement(int size, char binaryIn[size]){
     if (binaryIn[0] == '0')
-        return binaryToDecimal(0,l,binaryIn);
-    char inverse[l];
+        return binaryToDecimal(0,size,binaryIn);
+    char inverse[size];
     strcpy(inverse,binaryIn);
-    invert(0,l,inverse);
-    int result = binaryToDecimal(0,l,inverse);
+    invert(0,size,inverse);
+    long result = binaryToDecimal(0,size,inverse);
     result *= -1;
     return result;
 }
 
 
-void twosComplement(int size, char result[size+1]){
+void twosComplement(long n, int size, char result[size+1]){
     result[size]='\0';
-    int num;
     if (n<0)
-        num = n * -1;
-    else
-        num = n;
+        n *= -1;
     result[0] = '0';
-    decimalToBinary(num, 1, size, result);
+    decimalToBinary(n, 1, size, result);
     if (n < 0){
         invert(0,size,result);
         int pos = size-1;//Add one after inverting
@@ -107,39 +99,39 @@ void twosComplement(int size, char result[size+1]){
     }
 }
 
-int reverseTwosComplement(){
+long reverseTwosComplement(int size, char binaryIn[size]){
     if (binaryIn[0] == '0')
-        return binaryToDecimal(0,l,binaryIn);
-    char inverse[l];
+        return binaryToDecimal(0,size,binaryIn);
+    char inverse[size];
     strcpy(inverse,binaryIn);
-    invert(0,l,inverse);
-    int pos = l-1;//Add one after inverting
+    invert(0,size,inverse);
+    int pos = size-1;//Add one after inverting
     while (inverse[pos] == '1'){
         inverse[pos] = '0';
         pos--;
     }
     inverse[pos] = '1';
-    int result = binaryToDecimal(0,l,inverse);
+    long result = binaryToDecimal(0,size,inverse);
     result *= -1;
     return result;
 }
 
-void excess(int size, char result[size+1]){
-    int bias = (int)pow(2,l-1)- 1;
-    int num = n + bias;
+void excess(long n, int size, char result[size+1]){
+    long bias = (long)pow(2,size-1)- 1;
+    n += bias;
     result[size] = '\0';
-    decimalToBinary(num, 0, size, result);
+    decimalToBinary(n, 0, size, result);
 }
 
-int reverseExcess(){
-    int bias = (int)pow(2,l-1)- 1;
-    int num = binaryToDecimal(0,l,binaryIn);
+long reverseExcess(int size, char binaryIn[size]){
+    long bias = (long)pow(2,size-1)- 1;
+    long num = binaryToDecimal(0,size,binaryIn);
     return num - bias;
 }
 
-void decimalToBinary(int decimal, int firstBit, int bits, char binary[bits]){
+void decimalToBinary(long decimal, int firstBit, int bits, char binary[bits]){
     for (int i=firstBit; i<bits; i++) {
-        int divisor = (int) (pow(2, bits - (i + 1)) + 0.5);
+        long divisor = (long) (pow(2, bits - (i + 1)) + 0.5);
         if (decimal / divisor)
             binary[i] = '1';
         else
@@ -148,10 +140,10 @@ void decimalToBinary(int decimal, int firstBit, int bits, char binary[bits]){
     }
 }
 
-int binaryToDecimal(int firstBit, int bits, char binary[bits]){
-    int sum = 0;
+long binaryToDecimal(int firstBit, int bits, char binary[bits]){
+    long sum = 0;
     for (int i=firstBit; i<bits; i++) {
-        int divisor = (int) (pow(2, bits - 1 - i ));
+        long divisor = (long) (pow(2, bits - 1 - i ));
         if (binary[i] == '1')
             sum += divisor;
     }
@@ -167,23 +159,23 @@ void invert(int firstBit, int bits, char binary[bits]){
     }
 }
 
-int useArgs( int argc, char *argv[] ){
+int useArgs( int argc, char *argv[], int *l, long *n, int *mode, char **binaryIn ){
     if (argc > 3 || argc < 2){
         fprintf(stderr,"Usage Error: Expected two arguments, Number and Length, or a binary bit-string\n");
         return 0;
     }
     if (argc == 3) {
-        mode = 1;
-        l = atoi(argv[2]);
-        if (l < 1 || l > 64) {
-            fprintf(stderr, "Length must be an integer between 1 and 64\n");
+        *mode = 1;
+        *l = atoi(argv[2]);
+        if (*l < 2 || *l > 32) {
+            fprintf(stderr, "Length must be an integer between 2 and 32\n");
             return 0;
         }
-        n = atoi(argv[1]);
-        int largestInt = (int) pow(2, l - 1) - 1;
-        int smallestInt = (int) (-1 * pow(2, l - 1)) + 1;
-        if (n > largestInt || n < smallestInt) {
-            fprintf(stderr, "Can only represent numbers between %d and %d in %d bits\n", smallestInt, largestInt, l);
+        *n = atoi(argv[1]);
+        long largestInt = (long) pow(2, *l - 1) - 1;
+        long smallestInt = (long) (-1 * pow(2, *l - 1)) + 1;
+        if (*n > largestInt || *n < smallestInt) {
+            fprintf(stderr, "Can only represent numbers between %li and %li in %i bits\n", smallestInt, largestInt, *l);
             return 0;
         }
         return 1;
@@ -195,12 +187,12 @@ int useArgs( int argc, char *argv[] ){
             return 0;
         }
     }
-    binaryIn = (char *)malloc(sizeof(argv[1]));
-    strcpy(binaryIn,argv[1]);
-    if (strlen(binaryIn) > 64 || strlen(binaryIn) < 2){
-        fprintf(stderr,"Binary string must be between 2 and 64 characters long\n");
+    *binaryIn = (char *)malloc(sizeof(argv[1]));
+    strcpy(*binaryIn,argv[1]);
+    if (strlen(*binaryIn) > 32 || strlen(*binaryIn) < 2){
+        fprintf(stderr,"Binary string must be between 2 and 32 characters long\n");
         return 0;
     }
-    l = strlen(binaryIn);
+    *l = strlen(*binaryIn);
     return 1;
 }
