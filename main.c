@@ -61,11 +61,14 @@ long reverseSignedMagnitude(int size, char binaryIn[size]){
 
 void onesComplement(long n, int size, char result[size+1]){
     result[size]='\0';
-    if (n<0)
+    int toInvert = 0;
+    if (n<0) {
         n *= -1;
+        toInvert = 1;
+    }
     result[0] = '0';
     decimalToBinary(n, 1, size, result);
-    if (n < 0){
+    if (toInvert){
         invert(0,size,result);
     }
 }
@@ -84,11 +87,14 @@ long reverseOnesComplement(int size, char binaryIn[size]){
 
 void twosComplement(long n, int size, char result[size+1]){
     result[size]='\0';
-    if (n<0)
+    int toInvert = 0;
+    if (n<0) {
         n *= -1;
+        toInvert = 1;
+    }
     result[0] = '0';
     decimalToBinary(n, 1, size, result);
-    if (n < 0){
+    if (toInvert){
         invert(0,size,result);
         int pos = size-1;//Add one after inverting
         while (result[pos] == '1'){
