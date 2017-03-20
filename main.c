@@ -177,7 +177,7 @@ int useArgs( int argc, char *argv[], int *l, long *n, int *mode, char **binaryIn
             fprintf(stderr, "Length must be an integer between 2 and 32\n");
             return 0;
         }
-        *n = atoi(argv[1]);
+        *n = atol(argv[1]);
         long largestInt = (long) pow(2, *l - 1) - 1;
         long smallestInt = (long) (-1 * pow(2, *l - 1)) + 1;
         if (*n > largestInt || *n < smallestInt) {
