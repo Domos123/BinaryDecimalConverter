@@ -193,7 +193,7 @@ int useArgs( int argc, char *argv[], int *l, long *n, int *mode, char **binaryIn
             return 0;
         }
     }
-    *binaryIn = (char *)malloc(sizeof(argv[1]));
+    *binaryIn = (char *)malloc(strlen(argv[1]) + 1);
     strcpy(*binaryIn,argv[1]);
     if (strlen(*binaryIn) > 32 || strlen(*binaryIn) < 2){
         fprintf(stderr,"Binary string must be between 2 and 32 characters long\n");
