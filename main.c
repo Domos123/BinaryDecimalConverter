@@ -169,6 +169,12 @@ void toIEEESingle(float f, char result[32]){
         result[0] = '0';
     }
     long exponent = 0;
+    if (f == 0){//zero will result in infinite loop so we better catch it
+        for (int i=1; i<32; i++){
+            result[i] = '0';
+        }
+        return;
+    }
     if (f > 2){
         while (f > 2){
             f /= 2;
