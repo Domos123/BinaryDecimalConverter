@@ -53,7 +53,7 @@ int main( int argc, char *argv[] ) {
     printf("Two's Complement: %li\n",reverseTwosComplement(l, binaryIn));
     printf("Excess Representation: %li\n",reverseExcess(l, binaryIn));
     if (l == 32){
-        if (!strcmp(&binaryIn[1],"1111111111111111111111111111111")) {
+        if (!strncmp(&binaryIn[1],"1111111",7) && strcmp(&binaryIn[8],"00000000000000000000000")) {
             printf("IEEE-754 Single: NaN");
         }else{
             float result = fromIEEESingle(binaryIn);
